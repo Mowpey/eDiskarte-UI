@@ -79,35 +79,6 @@ export async function updateUserJobTags(data) {
   return response.data;
 }
 
-export async function fetchUserAchievements(userId) {
-  const token = await AsyncStorage.getItem("token");
-
-  if (!token) {
-    console.error("No token found in AsyncStorage for fetchUserAchievements");
-    throw new Error("Authentication token not found.");
-  }
-
-  if (!userId) {
-    const { data } = await decodeToken();
-    userId = data.id;
-  }
-
-  try {
-    const response = await axios.get(
-      `http://${process.env.EXPO_PUBLIC_IP_ADDRESS}:3000/user/achievements/${userId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching user achievements:", error);
-    throw error;
-  }
-}
-
 export async function uploadCredential(
   userId,
   credentialImages,
@@ -126,7 +97,7 @@ export async function uploadCredential(
     : [credentialImages];
 
   // Validate images - ensure we have valid image objects
-  if (images.length === 0 || !images.every((img) => img && img.uri)) {
+  if (images.length === 0 || !images.every(img => img && img.uri)) {
     throw new Error("No valid images provided for upload");
   }
 
@@ -134,8 +105,7 @@ export async function uploadCredential(
   const imageFiles = images.map((image, index) => ({
     uri: image.uri,
     type: image.mimeType || image.type || "image/jpeg", // Default to jpeg if no type is provided
-    name:
-      image.fileName || image.uri.split("/").pop() || `credential_${index}.jpg`,
+    name: image.fileName || image.uri.split("/").pop() || `credential_${index}.jpg`,
   }));
 
   // Create FormData with all images
@@ -143,7 +113,7 @@ export async function uploadCredential(
     const formData = new FormData();
 
     // Add all prepared image objects to formData
-    imageFiles.forEach((fileInfo) => {
+    imageFiles.forEach(fileInfo => {
       formData.append("credentialFile", fileInfo);
     });
 
